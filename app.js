@@ -63,9 +63,7 @@ function loadUserState(username) {
   if (nameEl) nameEl.textContent = username;
   if (roleEl) roleEl.textContent = username === 'Romeo' ? 'Budget Manager' : 'Savings Expert';
   if (avatarEl) {
-    avatarEl.src = username === 'Romeo'
-      ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuAV7YPdFPIPCxrCXIyoIyvxv-SPa_BHwCu3cXNhElDlyKviILDMtZDuVj0jU-0_3Had0Do8f9WUTIVvVtuaU4TDdJou6CBDKzwaSL5xDrUg5s4AW_vkCecNJ7cRxjmQJP5zK0j-LUbxrSb_iDssmaLAKXKIacbUH75_sL_Pr2n69ANQ83KO-bA2EiCpYo-uM2mTZNx-jqYEqCheo5VrLjx2CtnNmdUYgsRgRmO4SaR7lZEOj9xSYqfr3vNr7_ddnZhCvwENJek1NIE'
-      : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face';
+    avatarEl.textContent = username.charAt(0).toUpperCase();
   }
   
   updateDashboardUI();
@@ -113,6 +111,104 @@ const typeSelect = document.getElementById('entry-type');
 const categorySelect = document.getElementById('entry-category');
 const descError = document.getElementById('desc-error');
 const amountError = document.getElementById('amount-error');
+
+// Custom Autocomplete Suggestions Dropdown Logic
+const descSuggestionsDropdown = document.getElementById('description-suggestions-dropdown');
+const descriptionSuggestions = [
+  "Woolworths",
+  "Checkers",
+  "Pick n Pay",
+  "Spar",
+  "Fuel",
+  "Uber Ride",
+  "Uber Eats",
+  "Restaurant Dine-out",
+  "Rent",
+  "Electricity Bill",
+  "Water (Utilities)",
+  "Hair Salon",
+  "Barber Shop",
+  "Pharmacy / Meds",
+  "Cosmetics & Makeup",
+  "Netflix Subscription",
+  "Apple subscription",
+  "Cinema Tickets",
+  "Salary Deposit",
+  "Side Hustle Income",
+  "Investment Contribution"
+];
+
+function showSuggestions(filterText = '') {
+  if (!descSuggestionsDropdown) return;
+  const filtered = descriptionSuggestions.filter(item => 
+    item.toLowerCase().includes(filterText.toLowerCase())
+  );
+  
+  descSuggestionsDropdown.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    descSuggestionsDropdown.style.display = 'none';
+    return;
+  }
+  
+  filtered.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'suggestion-item';
+    div.textContent = item;
+    div.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent document click handler from firing
+      descInput.value = item;
+      descSuggestionsDropdown.style.display = 'none';
+      
+      // Auto-detect type and category for ease of logging
+      const textLower = item.toLowerCase();
+      if (textLower === 'salary deposit' || textLower === 'side hustle income') {
+        typeSelect.value = 'income';
+        categorySelect.value = 'Savings';
+      } else {
+        typeSelect.value = 'expense';
+        if (textLower.includes('woolworths') || textLower.includes('checkers') || textLower.includes('pick n pay') || textLower.includes('spar')) {
+          categorySelect.value = 'Groceries';
+        } else if (textLower.includes('fuel')) {
+          categorySelect.value = 'Fuel';
+        } else if (textLower.includes('dine') || textLower.includes('restaurant') || textLower.includes('uber eats')) {
+          categorySelect.value = 'Dining';
+        } else if (textLower.includes('rent') || textLower.includes('electricity') || textLower.includes('water')) {
+          categorySelect.value = 'Housing';
+        } else if (textLower.includes('salon') || textLower.includes('barber') || textLower.includes('pharmacy') || textLower.includes('meds') || textLower.includes('cosmetics') || textLower.includes('makeup')) {
+          categorySelect.value = 'PersonalCare';
+        } else if (textLower.includes('netflix') || textLower.includes('apple') || textLower.includes('cinema')) {
+          categorySelect.value = 'Entertainment';
+        } else if (textLower.includes('investment') || textLower.includes('savings')) {
+          categorySelect.value = 'Savings';
+        }
+      }
+    });
+    descSuggestionsDropdown.appendChild(div);
+  });
+  
+  descSuggestionsDropdown.style.display = 'block';
+}
+
+if (descInput) {
+  descInput.addEventListener('focus', () => {
+    showSuggestions(descInput.value);
+  });
+  
+  descInput.addEventListener('input', () => {
+    showSuggestions(descInput.value);
+  });
+}
+
+// Click outside or in open space to close dropdown
+document.addEventListener('click', (e) => {
+  if (descSuggestionsDropdown && descInput) {
+    if (e.target !== descInput && !descSuggestionsDropdown.contains(e.target)) {
+      descSuggestionsDropdown.style.display = 'none';
+    }
+  }
+});
+
 
 // Filter Elements
 const filterSearch = document.getElementById('filter-search');
@@ -520,8 +616,7 @@ function drawSpendChart() {
     'Dining': '#E06C75',
     'Housing': '#0d9488',
     'PersonalCare': '#822430',
-    'Entertainment': '#f59e0b',
-    'Savings': '#64748b'
+    'Entertainment': '#f59e0b'
   };
   const categoryNames = {
     'Groceries': 'Groceries',
@@ -529,8 +624,7 @@ function drawSpendChart() {
     'Dining': 'Dining Out',
     'Housing': 'Housing & Utilities',
     'PersonalCare': 'Personal Care',
-    'Entertainment': 'Entertainment & Leisure',
-    'Savings': 'Savings & Investments'
+    'Entertainment': 'Entertainment & Leisure'
   };
   
   let totalSpent = 0;
@@ -612,27 +706,6 @@ function drawSpendChart() {
     legendContainer.appendChild(pill);
   });
   
-  // Append Savings Contribution Legend Pill separately
-  const savingsSpent = state.budgets['Savings'].spent;
-  const savingsColor = categoryColors['Savings'];
-  const savingsPill = document.createElement('div');
-  savingsPill.style.display = 'flex';
-  savingsPill.style.alignItems = 'center';
-  savingsPill.style.gap = '0.5rem';
-  savingsPill.style.padding = '0.4rem 0.8rem';
-  savingsPill.style.background = 'rgba(13, 148, 136, 0.05)';
-  savingsPill.style.borderRadius = '2rem';
-  savingsPill.style.border = '1px solid rgba(13, 148, 136, 0.2)';
-  savingsPill.style.fontSize = '0.85rem';
-  savingsPill.style.fontWeight = '700';
-  
-  savingsPill.innerHTML = `
-    <span style="width: 0.65rem; height: 0.65rem; background-color: ${savingsColor}; border-radius: 50%; display: inline-block;"></span>
-    <span style="color: var(--color-teal);">${categoryNames['Savings']}</span>
-    <span style="color: var(--color-text-muted); font-size: 0.75rem;">(Asset growth)</span>
-    <span style="margin-left: 0.25rem; color: var(--color-teal);">${formatZAR(savingsSpent)}</span>
-  `;
-  legendContainer.appendChild(savingsPill);
 }
 
 // Dave Ramsey Dynamic Advisor Tips Generator
