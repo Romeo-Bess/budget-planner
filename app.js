@@ -1133,15 +1133,32 @@ if (loginForm) {
       return;
     }
     
-    // Validate credentials (both Romeo and Nandipha have password '123')
-    if (password === '123') {
+    // Validate credentials (6-character personalized passwords)
+    const expectedPassword = username === 'Romeo' ? 'romeo6' : 'nandi6';
+    if (password === expectedPassword) {
       localStorage.setItem('current_user', username);
       loadUserState(username);
       loginScreen.classList.add('hidden');
       passwordInput.value = '';
     } else {
-      loginError.textContent = 'Incorrect password. Try "123".';
+      loginError.textContent = `Incorrect password. Try "${expectedPassword}".`;
       passwordInput.focus();
+    }
+  });
+}
+
+// Password Visibility Toggle
+const btnTogglePassword = document.getElementById('btn-toggle-password');
+const visibilityIcon = document.getElementById('password-visibility-icon');
+
+if (btnTogglePassword && passwordInput && visibilityIcon) {
+  btnTogglePassword.addEventListener('click', () => {
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      visibilityIcon.textContent = 'visibility';
+    } else {
+      passwordInput.type = 'password';
+      visibilityIcon.textContent = 'visibility_off';
     }
   });
 }
