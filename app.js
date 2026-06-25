@@ -636,13 +636,13 @@ function renderRamseyTips() {
   const totalRemainingDebt = activeDebts.reduce((sum, g) => sum + (g.target - g.current), 0);
   
   let currentBabyStep = 1;
-  let stepTitle = "Baby Step 1: Save R 10,000 Starter Emergency Fund";
-  let stepDescription = "Build a R 10,000 beginner fund as fast as possible to protect yourself from life's unexpected events. Focus on this before paying down debt aggressively.";
+  let stepTitle = "Baby Step 1: Save R 20,000 Starter Emergency Fund";
+  let stepDescription = "Build a R 20,000 beginner fund as fast as possible to protect yourself from life's unexpected events. Focus on this before paying down debt aggressively.";
   let stepStatusColor = "var(--color-warning)";
   let stepBg = "rgba(245, 158, 11, 0.05)";
   let stepBorder = "rgba(245, 158, 11, 0.15)";
   
-  if (emergencyBalance >= 10000) {
+  if (emergencyBalance >= 20000) {
     if (activeDebts.length > 0 || state.liabilities > 0) {
       currentBabyStep = 2;
       stepTitle = "Baby Step 2: Pay Off All Debt Using the Debt Snowball";
@@ -694,10 +694,10 @@ function renderRamseyTips() {
   // BS1 Specific Guidance
   if (currentBabyStep === 1) {
     const currentSaved = emergencyGoal ? emergencyGoal.current : 0;
-    const remainingTo10k = 10000 - currentSaved;
+    const remainingTo20k = 20000 - currentSaved;
     tips.push({
-      title: 'Action Item: Secure your R 10,000 Starter Fund',
-      content: `You need R ${remainingTo10k.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} more to complete Baby Step 1. Stop all investing, extra debt payments, and non-essential spend immediately until this buffer is funded. Sell unused items or take on a side hustle if needed to get this done in 30 days!`,
+      title: 'Action Item: Secure your R 20,000 Starter Fund',
+      content: `You need R ${remainingTo20k.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} more to complete Baby Step 1. Stop all investing, extra debt payments, and non-essential spend immediately until this buffer is funded. Sell unused items or take on a side hustle if needed to get this done in 30 days!`,
       level: 'warning'
     });
   }
