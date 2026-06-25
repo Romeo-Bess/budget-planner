@@ -1,0 +1,16 @@
+{
+  "name": "sophisticated-professional-dashboard",
+  "version": "1.0.0",
+  "description": "Sophisticated Professional Personal Finance Dashboard for ZAR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/responsive.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "puppeteer": "^22.12.0"
+  }
+}

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Romeo's Good Budget - EveryDollar Inspired Finance Dashboard</title>
+  
+  <!-- Font and Icon Imports -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+  <!-- Mobile Top AppBar -->
+  <header class="mobile-appbar" id="mobile-header">
+    <div class="logo">
+      <span class="material-symbols-outlined logo-icon">account_balance_wallet</span>
+      <span>Romeo's Budget</span>
+    </div>
+    <div class="appbar-actions">
+      <button class="icon-button" id="mobile-trigger-log-tx" aria-label="Log Transaction">
+        <span class="material-symbols-outlined">add_circle</span>
+      </button>
+      <button class="icon-button" id="mobile-trigger-edit-bal" aria-label="Edit cash and debt balances">
+        <span class="material-symbols-outlined">edit_square</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Navigation for Desktop -->
+  <nav class="sidebar" id="desktop-sidebar">
+    <div class="sidebar-brand">
+      <div class="logo">
+        <span class="material-symbols-outlined logo-icon">account_balance_wallet</span>
+        <span>Romeo's Budget</span>
+      </div>
+      <div class="user-profile">
+        <div class="avatar-container">
+          <img id="user-avatar" alt="User profile avatar" class="avatar" loading="lazy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV7YPdFPIPCxrCXIyoIyvxv-SPa_BHwCu3cXNhElDlyKviILDMtZDuVj0jU-0_3Had0Do8f9WUTIVvVtuaU4TDdJou6CBDKzwaSL5xDrUg5s4AW_vkCecNJ7cRxjmQJP5zK0j-LUbxrSb_iDssmaLAKXKIacbUH75_sL_Pr2n69ANQ83KO-bA2EiCpYo-uM2mTZNx-jqYEqCheo5VrLjx2CtnNmdUYgsRgRmO4SaR7lZEOj9xSYqfr3vNr7_ddnZhCvwENJek1NIE"/>
+        </div>
+        <div class="user-info">
+          <span class="username" id="user-display-name">Wealth Overview</span>
+          <span class="user-role" id="user-display-role">ZAR Managed</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="nav-links">
+      <a href="#" class="nav-link active" data-tab="overview" aria-current="page">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Overview</span>
+      </a>
+      <a href="#" class="nav-link" data-tab="budgets">
+        <span class="material-symbols-outlined">pie_chart</span>
+        <span>Budgets</span>
+      </a>
+      <a href="#" class="nav-link" data-tab="goals">
+        <span class="material-symbols-outlined">track_changes</span>
+        <span>Goals &amp; Debt</span>
+      </a>
+      <a href="#" class="nav-link" data-tab="transactions">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span>Transactions</span>
+      </a>
+      <a href="#" class="nav-link" data-tab="insights">
+        <span class="material-symbols-outlined">insights</span>
+        <span>Insights</span>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="#" class="nav-link" data-tab="settings">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Settings</span>
+      </a>
+      <a href="#" class="nav-link" id="btn-logout">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Logout</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Grid Layout -->
+  <main class="main-content">
+    
+    <!-- OVERVIEW TAB CONTENT -->
+    <div class="tab-content active-view" id="tab-overview">
+      <!-- Hero Net Worth Card -->
+      <section class="card hero-card" id="net-worth-section">
+        <div class="hero-bg-blur" aria-hidden="true"></div>
+        <div class="hero-content-split">
+          <div class="hero-left">
+            <h1 class="card-label">Total Net Worth</h1>
+            <div class="net-worth-display">
+              <span class="currency-symbol">R</span>
+              <span id="net-worth-amount">1 245 000,00</span>
+            </div>
+            <div class="assets-liabilities-split">
+              <div class="split-item text-green">
+                <span class="material-symbols-outlined icon-sm">trending_up</span>
+                <span class="split-label">Cash &amp; Savings:</span>
+                <span id="total-assets">R 0,00</span>
+              </div>
+              <div class="split-item text-orange">
+                <span class="material-symbols-outlined icon-sm">trending_down</span>
+                <span class="split-label">Total Debt:</span>
+                <span id="total-liabilities">R 0,00</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="btn-trigger-log-tx">
+              <span class="material-symbols-outlined">add</span>
+              <span>Log Transaction</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-edit-balances">
+              <span class="material-symbols-outlined">edit_square</span>
+              <span>Edit Balances</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Budgets Summary Quick Card for Overview -->
+      <section class="card" id="overview-budgets-summary" style="grid-column: span 12;">
+        <div class="section-header-split">
+          <div class="section-header">
+            <h2 class="card-title">Budget Health Overview</h2>
+            <p class="section-subtitle">Active category tracks</p>
+          </div>
+          <button class="btn btn-secondary" data-tab="budgets" style="min-height: 2.5rem; padding: 0 1rem;">View All Budgets</button>
+        </div>
+        <div class="budgets-grid" style="margin-top: 1rem;">
+          <!-- Active categories shown briefly on landing page -->
+          <div class="budget-item" data-category="Groceries">
+            <div class="budget-header">
+              <span class="category-name">Groceries</span>
+              <span class="budget-status status-good">Good</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar bar-healthy" style="width: 53.33%"></div></div>
+          </div>
+          <div class="budget-item" data-category="Fuel">
+            <div class="budget-header">
+              <span class="category-name">Fuel &amp; Transport</span>
+              <span class="budget-status status-warning">Near Limit</span>
+            </div>
+            <div class="progress-track"><div class="progress-bar bar-warning" style="width: 93.33%"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- BUDGETS TAB CONTENT -->
+    <div class="tab-content" id="tab-budgets">
+      <!-- Budgets & Category Limits -->
+      <section class="card budgets-card" id="budgets-section" style="grid-column: span 12;">
+        <div class="section-header-split">
+          <div class="section-header">
+            <h2 class="card-title">Monthly Progress &amp; Budgets</h2>
+            <p class="section-subtitle">Dave Ramsey style zero-based budgeting categories</p>
+          </div>
+          <button class="btn btn-secondary" id="btn-edit-budgets">
+            <span class="material-symbols-outlined">edit_note</span>
+            <span>Edit Limits</span>
+          </button>
+        </div>
+        <div class="budgets-grid">
+          
+          <!-- Groceries -->
+          <div class="budget-item" data-category="Groceries">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="category-name">Groceries</span>
+              </div>
+              <span class="budget-status status-good">Good</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 3 200,00</span>
+                <span class="limit-value">Limit: R 6 000,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-healthy" style="width: 53.33%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fuel -->
+          <div class="budget-item" data-category="Fuel">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">local_gas_station</span>
+                <span class="category-name">Fuel &amp; Transport</span>
+              </div>
+              <span class="budget-status status-warning">Near Limit</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 2 800,00</span>
+                <span class="limit-value">Limit: R 3 000,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-warning" style="width: 93.33%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dining Out -->
+          <div class="budget-item" data-category="Dining">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">restaurant</span>
+                <span class="category-name">Dining Out</span>
+              </div>
+              <span class="budget-status status-danger">Over Budget</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 2 100,00</span>
+                <span class="limit-value">Limit: R 1 500,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-danger" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Housing & Utilities -->
+          <div class="budget-item" data-category="Housing">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">home</span>
+                <span class="category-name">Housing &amp; Utilities</span>
+              </div>
+              <span class="budget-status status-good">On Track</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 12 500,00</span>
+                <span class="limit-value">Limit: R 15 000,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-healthy" style="width: 83.33%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Care -->
+          <div class="budget-item" data-category="PersonalCare">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">content_cut</span>
+                <span class="category-name">Personal Care</span>
+              </div>
+              <span class="budget-status status-good">On Track</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 0,00</span>
+                <span class="limit-value">Limit: R 0,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-healthy" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entertainment & Leisure -->
+          <div class="budget-item" data-category="Entertainment">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">theater_comedy</span>
+                <span class="category-name">Entertainment &amp; Leisure</span>
+              </div>
+              <span class="budget-status status-good">On Track</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 0,00</span>
+                <span class="limit-value">Limit: R 0,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-healthy" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Savings & Investments -->
+          <div class="budget-item" data-category="Savings">
+            <div class="budget-header">
+              <div class="budget-icon-name">
+                <span class="material-symbols-outlined">savings</span>
+                <span class="category-name">Savings &amp; Investments</span>
+              </div>
+              <span class="budget-status status-good">On Track</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-label-row">
+                <span class="spent-value">Spent: R 0,00</span>
+                <span class="limit-value">Limit: R 30 000,00</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar bar-healthy" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- GOALS TAB CONTENT -->
+    <div class="tab-content" id="tab-goals">
+      <section class="card" style="grid-column: span 12;">
+        <div class="section-header-split">
+          <div class="section-header">
+            <h2 class="card-title">Savings &amp; Debt Payoff Goals</h2>
+            <p class="section-subtitle">Add custom goals and make contributions to pay off liabilities or grow your assets.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-create-goal">
+            <span class="material-symbols-outlined">add_task</span>
+            <span>Create New Goal</span>
+          </button>
+        </div>
+        
+        <div class="goals-grid" id="goals-list-container">
+          <!-- Dynamically Rendered Goals -->
+        </div>
+      </section>
+
+      <!-- Debt Snowball Calculator Panel (Zero-Squish layout) -->
+      <section class="card" style="grid-column: span 12; margin-top: 1rem;">
+        <div class="section-header">
+          <h2 class="card-title">
+            <span class="material-symbols-outlined logo-icon">filter_hdr</span> Debt Snowball Simulator
+          </h2>
+          <p class="section-subtitle">Dave Ramsey's method sorts debts smallest to largest. Accelerate payoffs with extra rollover contributions.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: 1rem; width: 100%;">
+          <div class="input-group" style="max-width: 25rem;">
+            <label for="snowball-extra-payment">Extra Monthly Payment (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="snowball-extra-payment" value="1000" placeholder="e.g. 1000" min="0" step="100"/>
+            </div>
+          </div>
+          <div id="snowball-result-container" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem; width: 100%;">
+            <!-- Projections injected dynamically -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TRANSACTIONS TAB CONTENT -->
+    <div class="tab-content" id="tab-transactions">
+      <!-- Recent Transactions List -->
+      <section class="card transactions-card" id="transactions-section" style="grid-column: span 12;">
+        <div class="section-header-split" style="flex-direction: column; align-items: start; gap: 0.5rem; margin-bottom: 1.5rem;">
+          <h2 class="card-title" style="margin-bottom: 0;">Recent Transactions</h2>
+          <p class="section-subtitle">Search and filter your logged expenditures and incomes</p>
+        </div>
+        
+        <!-- Transaction Filters (Zero-Squish design) -->
+        <div class="filters-container" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1.5px solid var(--color-border); padding-bottom: 1.5rem; width: 100%;">
+          <div class="input-group" style="flex: 2; min-width: 15rem;">
+            <label for="filter-search" style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted);">Search Description</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon-left">search</span>
+              <input type="text" id="filter-search" placeholder="e.g. Woolworths, Salary..." style="height: 2.75rem;"/>
+            </div>
+          </div>
+          
+          <div class="input-group" style="flex: 1; min-width: 10rem;">
+            <label for="filter-category" style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted);">Category</label>
+            <div class="select-with-icon">
+              <span class="material-symbols-outlined input-icon-left">grid_view</span>
+              <select id="filter-category" style="height: 2.75rem;">
+                <option value="all">All Categories</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Fuel">Fuel &amp; Transport</option>
+                <option value="Dining">Dining Out</option>
+                <option value="Housing">Housing &amp; Utilities</option>
+                <option value="PersonalCare">Personal Care</option>
+                <option value="Entertainment">Entertainment &amp; Leisure</option>
+                <option value="Savings">Savings &amp; Investments</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group" style="flex: 1; min-width: 8rem;">
+            <label for="filter-type" style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted);">Type</label>
+            <div class="select-with-icon">
+              <span class="material-symbols-outlined input-icon-left">swap_horiz</span>
+              <select id="filter-type" style="height: 2.75rem;">
+                <option value="all">All Types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="transactions-container">
+          <ul class="transaction-list" id="transaction-list-element">
+            <!-- Rendered Dynamically -->
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- INSIGHTS TAB CONTENT -->
+    <div class="tab-content" id="tab-insights">
+      <section class="card" style="grid-column: span 12;">
+        <h2 class="card-title">
+          <span class="material-symbols-outlined text-green">insights</span> Wealth Insights &amp; Breakdown
+        </h2>
+        <div class="insights-grid-container" style="display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-md); align-items: center; justify-content: center; width: 100%;">
+          
+          <!-- Animated SVG Donut Chart container -->
+          <div class="chart-wrapper" style="position: relative; width: 16rem; height: 16rem; display: flex; align-items: center; justify-content: center;">
+            <svg id="spend-donut-chart" viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+              <!-- Arcs dynamically injected -->
+            </svg>
+            <div class="chart-center-text" style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Spent</span>
+              <span id="chart-total-spent" style="font-size: 1.25rem; font-weight: 800; color: var(--color-text);">R 0,00</span>
+            </div>
+          </div>
+          
+          <!-- Legend container -->
+          <div id="chart-legend-container" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; width: 100%; max-width: 32rem; margin-top: 1rem;">
+            <!-- Legend pills dynamically injected -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Dave Ramsey Personal Finance Tips Advisor -->
+      <section class="card" style="grid-column: span 12;">
+        <h2 class="card-title">
+          <span class="material-symbols-outlined logo-icon" style="color: var(--color-warning);">lightbulb</span> Dave Ramsey Financial Guidance
+        </h2>
+        <div id="ramsey-tips-container" style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+          <!-- Dynamic Dave Ramsey guidance advice blocks injected here -->
+        </div>
+      </section>
+    </div>
+
+    <!-- SETTINGS TAB CONTENT -->
+    <div class="tab-content" id="tab-settings">
+      <section class="card" style="grid-column: span 12;">
+        <h2 class="card-title">
+          <span class="material-symbols-outlined">settings</span> Preferences
+        </h2>
+        <div style="display: flex; flex-direction: column; gap: var(--spacing-md); margin-top: var(--spacing-md);">
+          <div class="input-group">
+            <label>Currency Reference</label>
+            <input type="text" value="ZAR (R)" readonly style="background: rgba(0,0,0,0.05);"/>
+          </div>
+          <div class="input-group">
+            <label>Locale Region</label>
+            <input type="text" value="South Africa (ZAR)" readonly style="background: rgba(0,0,0,0.05);"/>
+          </div>
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+            <button class="btn btn-secondary" id="btn-clear-database" style="color: var(--color-expense); border-color: rgba(225, 29, 72, 0.3); min-height: 3rem;">
+              <span class="material-symbols-outlined">delete_forever</span>
+              <span>Reset &amp; Clear All Data</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-nav" id="mobile-navigation">
+    <a href="#" class="mobile-nav-link active" data-tab="overview" aria-current="page">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="mobile-nav-link" data-tab="budgets">
+      <span class="material-symbols-outlined">pie_chart</span>
+      <span>Budget</span>
+    </a>
+    <a href="#" class="mobile-nav-link" data-tab="goals">
+      <span class="material-symbols-outlined">track_changes</span>
+      <span>Goals</span>
+    </a>
+    <a href="#" class="mobile-nav-link" data-tab="transactions">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span>Txns</span>
+    </a>
+  </nav>
+
+  <!-- Edit Balances Modal Dialog -->
+  <div class="modal-overlay" id="edit-balances-modal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Current Balances</h3>
+        <button class="icon-button" id="close-modal-btn" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="edit-balances-form" novalidate>
+        <div class="form-grid" style="margin-top: 1rem;">
+          <div class="input-group">
+            <label for="edit-assets">Current Cash &amp; Savings (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="edit-assets" placeholder="0,00" step="0.01" min="0" required/>
+            </div>
+            <span class="error-msg" id="assets-error"></span>
+          </div>
+
+          <div class="input-group">
+            <label for="edit-liabilities">Total Debt Owed (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="edit-liabilities" placeholder="0,00" step="0.01" min="0" required/>
+            </div>
+            <span class="error-msg" id="liabilities-error"></span>
+          </div>
+          
+          <div class="form-actions" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Balances</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Budgets Modal Dialog -->
+  <div class="modal-overlay" id="edit-budgets-modal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Budget Limits</h3>
+        <button class="icon-button" id="close-budgets-modal-btn" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="edit-budgets-form" novalidate>
+        <div class="form-grid" style="margin-top: 1rem; max-height: 25rem; overflow-y: auto; padding-right: 0.5rem;">
+          
+          <div class="input-group">
+            <label for="limit-groceries">Groceries Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-groceries" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-fuel">Fuel &amp; Transport Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-fuel" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-dining">Dining Out Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-dining" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-housing">Housing &amp; Utilities Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-housing" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-personalcare">Personal Care Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-personalcare" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-entertainment">Entertainment &amp; Leisure Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-entertainment" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="limit-savings">Savings &amp; Investments Limit (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="limit-savings" step="100" min="0" required/>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Budget Limits</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Goal Modal Dialog -->
+  <div class="modal-overlay" id="create-goal-modal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Goal</h3>
+        <button class="icon-button" id="close-goal-modal-btn" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="create-goal-form" novalidate>
+        <div class="form-grid" style="margin-top: 1rem;">
+          <div class="input-group">
+            <label for="goal-name">Goal Name</label>
+            <input type="text" id="goal-name" placeholder="e.g. Emergency Fund, Car Loan Payoff" required minlength="2"/>
+            <span class="error-msg" id="goal-name-error"></span>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="goal-type">Goal Type</label>
+              <select id="goal-type" required>
+                <option value="savings">Savings Goal (Increases Assets)</option>
+                <option value="debt">Debt Payoff Goal (Decreases Liabilities)</option>
+              </select>
+            </div>
+            
+            <div class="input-group">
+              <label for="goal-target">Target Amount (ZAR)</label>
+              <div class="prefix-container">
+                <span class="input-prefix">R</span>
+                <input type="number" id="goal-target" placeholder="0,00" step="100" min="1" required/>
+              </div>
+              <span class="error-msg" id="goal-target-error"></span>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="goal-current">Current Accumulated/Paid (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="goal-current" placeholder="0,00" value="0" step="100" min="0" required/>
+            </div>
+            <span class="error-msg" id="goal-current-error"></span>
+          </div>
+          
+          <div class="form-actions" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Goal</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contribute to Goal Modal Dialog -->
+  <div class="modal-overlay" id="contribute-goal-modal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Make Contribution / Payoff</h3>
+        <button class="icon-button" id="close-contrib-modal-btn" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="contribute-goal-form" novalidate>
+        <input type="hidden" id="contrib-goal-id"/>
+        <div class="form-grid" style="margin-top: 1rem;">
+          <h4 id="contrib-goal-name" style="font-weight: 600; color: var(--color-mint);">Emergency Fund</h4>
+          <div class="input-group" style="margin-top: 0.5rem;">
+            <label for="contrib-amount">Contribution Amount (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="contrib-amount" placeholder="0,00" step="0.01" min="0.01" required/>
+            </div>
+            <span class="error-msg" id="contrib-error"></span>
+          </div>
+          
+          <div class="form-actions" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Record Contribution</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Log Transaction Modal Dialog (Moved from main screen to avoid squishing) -->
+  <div class="modal-overlay" id="quick-add-modal" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Log Transaction</h3>
+        <button class="icon-button" id="close-quick-add-btn" aria-label="Close Modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form id="quick-add-form" novalidate>
+        <div class="form-grid" style="margin-top: 1rem;">
+          
+          <div class="input-group">
+            <label for="entry-description">Description</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon-left">label</span>
+              <input type="text" id="entry-description" list="description-suggestions" placeholder="e.g. Woolworths, Checkers, Gautrain" required minlength="2"/>
+              <datalist id="description-suggestions">
+                <option value="Woolworths"></option>
+                <option value="Checkers"></option>
+                <option value="Pick n Pay"></option>
+                <option value="Spar"></option>
+                <option value="Shell Garage"></option>
+                <option value="Engen Petrol"></option>
+                <option value="Sasol Petrol"></option>
+                <option value="Gautrain"></option>
+                <option value="Uber Ride"></option>
+                <option value="Restaurant Dine-out"></option>
+                <option value="Coffee Shop Cafe"></option>
+                <option value="Fast Food Takeaway"></option>
+                <option value="Rent Payment"></option>
+                <option value="Bond Installment"></option>
+                <option value="Electricity Bill"></option>
+                <option value="Water &amp; Sanitation"></option>
+                <option value="Hair Salon"></option>
+                <option value="Barber Shop"></option>
+                <option value="Pharmacy / Meds"></option>
+                <option value="Cosmetics &amp; Makeup"></option>
+                <option value="Netflix Subscription"></option>
+                <option value="Spotify Premium"></option>
+                <option value="Cinema Tickets"></option>
+                <option value="Weekend Getaway / Event"></option>
+                <option value="Salary Deposit"></option>
+                <option value="Side Hustle Income"></option>
+                <option value="Investment Contribution"></option>
+              </datalist>
+            </div>
+            <span class="error-msg" id="desc-error"></span>
+          </div>
+
+          <div class="input-group">
+            <label for="entry-amount">Amount (ZAR)</label>
+            <div class="prefix-container">
+              <span class="input-prefix">R</span>
+              <input type="number" id="entry-amount" placeholder="0,00" step="0.01" min="0.01" required/>
+            </div>
+            <span class="error-msg" id="amount-error"></span>
+          </div>
+
+          <div class="input-group">
+            <label for="entry-type">Flow Type</label>
+            <div class="select-with-icon">
+              <span class="material-symbols-outlined input-icon-left">swap_horiz</span>
+              <select id="entry-type" required>
+                <option value="expense">Expense (Spend/Liability)</option>
+                <option value="income">Income (Growth/Asset)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label for="entry-category">Category</label>
+            <div class="select-with-icon">
+              <span class="material-symbols-outlined input-icon-left">grid_view</span>
+              <select id="entry-category" required>
+                <option value="Groceries">Groceries</option>
+                <option value="Fuel">Fuel &amp; Transport</option>
+                <option value="Dining">Dining Out</option>
+                <option value="Housing">Housing &amp; Utilities</option>
+                <option value="PersonalCare">Personal Care</option>
+                <option value="Entertainment">Entertainment &amp; Leisure</option>
+                <option value="Savings">Savings &amp; Investments</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-actions" style="margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" id="btn-submit-entry" style="width: 100%;">
+              <span class="material-symbols-outlined">add</span>
+              <span>Log Transaction</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Screen Overlay -->
+  <div class="login-overlay" id="login-screen">
+    <div class="login-card">
+      <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">
+        <span class="material-symbols-outlined logo-icon" style="font-size: 2.5rem;">account_balance_wallet</span>
+        <span style="font-size: 1.6rem;">Romeo's Budget</span>
+      </div>
+      <h2 style="font-size: 1.25rem; font-weight: 700; text-align: center; color: var(--color-brand); margin-bottom: 1.5rem;">Please Sign In</h2>
+      <form id="login-form" novalidate>
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="login-username">Username</label>
+            <div class="select-with-icon">
+              <span class="material-symbols-outlined input-icon-left">person</span>
+              <select id="login-username" required>
+                <option value="" disabled selected>Select User</option>
+                <option value="Romeo">Romeo</option>
+                <option value="Nandipha">Nandipha</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <div class="input-with-icon">
+              <span class="material-symbols-outlined input-icon-left">lock</span>
+              <input type="password" id="login-password" placeholder="Enter password (123)" required/>
+            </div>
+            <span class="error-msg" id="login-error" style="display: block; margin-top: 0.5rem; text-align: center; color: var(--color-expense);"></span>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; min-height: 3rem;">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
