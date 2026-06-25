@@ -34,9 +34,21 @@ function loadUserState(username) {
     const savedState = localStorage.getItem(getUserStorageKey());
     if (savedState) {
       const parsed = JSON.parse(savedState);
-      const hasNewCategories = parsed.budgets && parsed.budgets.PersonalCare && parsed.budgets.Entertainment;
-      if (hasNewCategories) {
-        state = parsed;
+      if (parsed && typeof parsed === 'object') {
+        if (typeof parsed.assets === 'number') state.assets = parsed.assets;
+        if (typeof parsed.liabilities === 'number') state.liabilities = parsed.liabilities;
+        if (Array.isArray(parsed.transactions)) state.transactions = parsed.transactions;
+        if (Array.isArray(parsed.goals)) state.goals = parsed.goals;
+        if (parsed.budgets && typeof parsed.budgets === 'object') {
+          Object.keys(state.budgets).forEach(cat => {
+            if (parsed.budgets[cat]) {
+              state.budgets[cat] = {
+                spent: typeof parsed.budgets[cat].spent === 'number' ? parsed.budgets[cat].spent : 0,
+                limit: typeof parsed.budgets[cat].limit === 'number' ? parsed.budgets[cat].limit : 0
+              };
+            }
+          });
+        }
       }
     }
   } catch (e) {
@@ -1140,6 +1152,10 @@ if (btnLogout) {
     usernameInput.value = '';
     passwordInput.value = '';
     
+    // Clear global state & update UI so no user data remains visible
+    state = JSON.parse(JSON.stringify(defaultState));
+    updateDashboardUI();
+    
     loginScreen.style.display = 'flex';
     setTimeout(() => {
       loginScreen.classList.remove('hidden');
@@ -1155,6 +1171,8 @@ if (savedUser && (savedUser === 'Romeo' || savedUser === 'Nandipha')) {
   loginScreen.style.display = 'none';
 } else {
   currentUser = null;
+  state = JSON.parse(JSON.stringify(defaultState));
+  updateDashboardUI();
   loginScreen.style.display = 'flex';
   loginScreen.classList.remove('hidden');
 }
