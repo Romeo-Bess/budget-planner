@@ -919,11 +919,111 @@ body {
 }
 
 .login-card {
-  background-color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border-radius: var(--radius-card);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   width: 90%;
-  max-width: 26rem;
-  padding: 2.5rem;
-  box-shadow: 0 30px 60px -10px rgba(15, 23, 42, 0.12);
+  max-width: 28rem;
+  padding: 2.75rem 2.5rem;
+  box-shadow: 0 40px 80px -15px rgba(15, 23, 42, 0.15);
+  z-index: 10;
+}
+
+/* Glowing Background Orbs */
+.login-glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  opacity: 0.65;
+  pointer-events: none;
+}
+.orb-1 {
+  width: 30rem;
+  height: 30rem;
+  background-color: rgba(0, 107, 96, 0.15);
+  top: -10rem;
+  left: -10rem;
+}
+.orb-2 {
+  width: 30rem;
+  height: 30rem;
+  background-color: rgba(225, 29, 72, 0.1);
+  bottom: -10rem;
+  right: -10rem;
+}
+
+/* Profile Switcher Cards */
+.login-profiles-container {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.login-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  padding: 1.5rem 1rem;
+  background: #ffffff;
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.login-profile-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-text-muted);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+}
+
+.login-profile-card.active {
+  border-color: var(--color-teal);
+  background: rgba(0, 107, 96, 0.03);
+  box-shadow: 0 12px 24px rgba(0, 107, 96, 0.1);
+}
+
+.login-profile-card.active .login-avatar-wrapper {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px var(--color-teal-glow);
+  border-color: var(--color-teal);
+}
+
+.login-avatar-wrapper {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  transition: var(--transition-smooth);
+  margin-bottom: 0.25rem;
+}
+
+.login-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-brand);
+}
+
+.profile-role {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }

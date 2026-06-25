@@ -1079,21 +1079,57 @@ if (btnClearDatabase) {
 // 8. User Auth Login & Logout Flow
 const loginScreen = document.getElementById('login-screen');
 const loginForm = document.getElementById('login-form');
-const usernameSelect = document.getElementById('login-username');
+const usernameInput = document.getElementById('login-username');
 const passwordInput = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
 const btnLogout = document.getElementById('btn-logout');
+
+const profileCards = document.querySelectorAll('.login-profile-card');
+const passwordSection = document.getElementById('password-group');
+const btnLoginSubmit = document.getElementById('btn-login-submit');
+
+profileCards.forEach(card => {
+  card.addEventListener('click', () => {
+    // Set active class
+    profileCards.forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    
+    // Set username value
+    const username = card.getAttribute('data-username');
+    usernameInput.value = username;
+    
+    // Enable password field
+    passwordSection.style.opacity = '1';
+    passwordSection.style.pointerEvents = 'auto';
+    passwordInput.removeAttribute('disabled');
+    passwordInput.value = '';
+    passwordInput.focus();
+    
+    // Enable submit button
+    btnLoginSubmit.removeAttribute('disabled');
+    btnLoginSubmit.style.opacity = '1';
+    btnLoginSubmit.style.pointerEvents = 'auto';
+  });
+  
+  // Keyboard accessibility
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      card.click();
+    }
+  });
+});
 
 if (loginForm) {
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     loginError.textContent = '';
     
-    const username = usernameSelect.value;
+    const username = usernameInput.value;
     const password = passwordInput.value;
     
     if (!username) {
-      loginError.textContent = 'Please select a user.';
+      loginError.textContent = 'Please select a profile first.';
       return;
     }
     
@@ -1105,6 +1141,7 @@ if (loginForm) {
       passwordInput.value = '';
     } else {
       loginError.textContent = 'Incorrect password. Try "123".';
+      passwordInput.focus();
     }
   });
 }
@@ -1114,6 +1151,18 @@ if (btnLogout) {
     e.preventDefault();
     localStorage.removeItem('current_user');
     currentUser = null;
+    
+    // Reset login form visual state
+    usernameInput.value = '';
+    profileCards.forEach(c => c.classList.remove('active'));
+    passwordSection.style.opacity = '0.3';
+    passwordSection.style.pointerEvents = 'none';
+    passwordInput.setAttribute('disabled', 'true');
+    passwordInput.value = '';
+    btnLoginSubmit.setAttribute('disabled', 'true');
+    btnLoginSubmit.style.opacity = '0.3';
+    btnLoginSubmit.style.pointerEvents = 'none';
+    
     loginScreen.classList.remove('hidden');
   });
 }
