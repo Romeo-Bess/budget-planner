@@ -1084,42 +1084,6 @@ const passwordInput = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
 const btnLogout = document.getElementById('btn-logout');
 
-const profileCards = document.querySelectorAll('.login-profile-card');
-const passwordSection = document.getElementById('password-group');
-const btnLoginSubmit = document.getElementById('btn-login-submit');
-
-profileCards.forEach(card => {
-  card.addEventListener('click', () => {
-    // Set active class
-    profileCards.forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    
-    // Set username value
-    const username = card.getAttribute('data-username');
-    usernameInput.value = username;
-    
-    // Enable password field
-    passwordSection.style.opacity = '1';
-    passwordSection.style.pointerEvents = 'auto';
-    passwordInput.removeAttribute('disabled');
-    passwordInput.value = '';
-    passwordInput.focus();
-    
-    // Enable submit button
-    btnLoginSubmit.removeAttribute('disabled');
-    btnLoginSubmit.style.opacity = '1';
-    btnLoginSubmit.style.pointerEvents = 'auto';
-  });
-  
-  // Keyboard accessibility
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      card.click();
-    }
-  });
-});
-
 if (loginForm) {
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1129,7 +1093,7 @@ if (loginForm) {
     const password = passwordInput.value;
     
     if (!username) {
-      loginError.textContent = 'Please select a profile first.';
+      loginError.textContent = 'Please select a username.';
       return;
     }
     
@@ -1139,6 +1103,9 @@ if (loginForm) {
       localStorage.setItem('current_user', username);
       loadUserState(username);
       loginScreen.classList.add('hidden');
+      setTimeout(() => {
+        loginScreen.style.display = 'none';
+      }, 300); // Allow fadeout transition
       passwordInput.value = '';
     } else {
       loginError.textContent = `Incorrect password. Try "${expectedPassword}".`;
@@ -1169,18 +1136,14 @@ if (btnLogout) {
     localStorage.removeItem('current_user');
     currentUser = null;
     
-    // Reset login form visual state
+    // Reset login form fields
     usernameInput.value = '';
-    profileCards.forEach(c => c.classList.remove('active'));
-    passwordSection.style.opacity = '0.3';
-    passwordSection.style.pointerEvents = 'none';
-    passwordInput.setAttribute('disabled', 'true');
     passwordInput.value = '';
-    btnLoginSubmit.setAttribute('disabled', 'true');
-    btnLoginSubmit.style.opacity = '0.3';
-    btnLoginSubmit.style.pointerEvents = 'none';
     
-    loginScreen.classList.remove('hidden');
+    loginScreen.style.display = 'flex';
+    setTimeout(() => {
+      loginScreen.classList.remove('hidden');
+    }, 10);
   });
 }
 
@@ -1189,8 +1152,9 @@ const savedUser = localStorage.getItem('current_user');
 if (savedUser && (savedUser === 'Romeo' || savedUser === 'Nandipha')) {
   loadUserState(savedUser);
   loginScreen.classList.add('hidden');
+  loginScreen.style.display = 'none';
 } else {
-  // Clear any partial state and display login screen
   currentUser = null;
+  loginScreen.style.display = 'flex';
   loginScreen.classList.remove('hidden');
 }
