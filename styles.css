@@ -1,28 +1,28 @@
 /* ==========================================================================
-   Design System Variables & Palette - Premium Light Glassmorphism
+   Design System Variables & Palette - Premium Dark Glassmorphism
    ========================================================================== */
 :root {
-  --color-bg: #f5f6fa;
-  --color-text: #0f172a;       /* Slate 900 */
-  --color-text-muted: #64748b; /* Slate 500 */
+  --color-bg: #051132;
+  --color-text: #dce1ff;       /* Light blue-slate */
+  --color-text-muted: #a0aabf; /* Soft grey-slate */
   
   /* Brand Jewels */
-  --color-brand: #0f172a;      /* Deep Slate */
-  --color-primary: #0f172a;
-  --color-teal: #006b60;       /* Secondary teal */
-  --color-teal-glow: rgba(0, 107, 96, 0.15);
+  --color-brand: #73DACA;      /* Mint Green */
+  --color-primary: #73DACA;
+  --color-teal: #73DACA;       /* Secondary teal/mint */
+  --color-teal-glow: rgba(115, 218, 202, 0.15);
   
   /* Indicators */
-  --color-growth: #0d9488;     /* Mint Green Emerald */
-  --color-expense: #e11d48;    /* Muted Sunset Red */
+  --color-growth: #73DACA;     /* Mint Green */
+  --color-expense: #E06C75;    /* Sunset Orange */
   --color-warning: #f59e0b;    /* Amber Warning */
   
   /* Glass Surface System */
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06);
-  --glass-shadow-hover: 0 30px 60px -15px rgba(15, 23, 42, 0.1);
-  --glass-shadow-inset: inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+  --glass-shadow-hover: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+  --glass-shadow-inset: inset 0 1px 1px rgba(255, 255, 255, 0.05);
   
   /* Spacing */
   --spacing-sm: 0.5rem;   /* 8px */
@@ -34,6 +34,9 @@
   --radius-input: 1rem;
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Inputs */
+  --color-input-bg: rgba(0, 0, 0, 0.2);
 }
 
 /* ==========================================================================
@@ -55,9 +58,8 @@ body {
   font-family: var(--font-family);
   background-color: var(--color-bg);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(0, 107, 96, 0.03) 0, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(113, 216, 200, 0.05) 0, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(224, 108, 117, 0.02) 0, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(115, 218, 202, 0.1) 0, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0, transparent 50%);
   background-attachment: fixed;
   color: var(--color-text);
   min-height: 100%;
@@ -421,14 +423,16 @@ body {
 }
 
 .goal-card {
-  background: #FFFFFF;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02);
+  box-shadow: var(--glass-shadow);
   transition: var(--transition-smooth);
 }
 
