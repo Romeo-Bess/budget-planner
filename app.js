@@ -1,5 +1,7 @@
-// LocalStorage Persistence Configuration
-const LOCAL_STORAGE_KEY = 'zar_wealth_dashboard_state';
+// Supabase Database Configuration
+const SUPABASE_URL = 'https://upgrmmymzgystzkffawe.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZ3JtbXltemd5c3R6a2ZmYXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzY4ODIsImV4cCI6MjA5ODIxMjg4Mn0.FPAeK5_su8Jf94BBWslR2w590mDRsW3Jolhfh2vdDj0';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const defaultState = {
   assets: 0.00,
@@ -25,11 +27,66 @@ function getUserStorageKey() {
   return currentUser ? `zar_wealth_dashboard_state_${currentUser.toLowerCase()}` : null;
 }
 
-// Load State from LocalStorage for specified user
-function loadUserState(username) {
+// Load State from Supabase (or LocalStorage fallback) for specified user
+async function loadUserState(username) {
   currentUser = username;
   state = JSON.parse(JSON.stringify(defaultState));
   
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('user_budgets_state')
+        .select('state_data')
+        .eq('username', username)
+        .maybeSingle();
+        
+      if (error) throw error;
+      
+      if (data && data.state_data) {
+        const parsed = data.state_data;
+        if (parsed && typeof parsed === 'object') {
+          if (typeof parsed.assets === 'number') state.assets = parsed.assets;
+          if (typeof parsed.liabilities === 'number') state.liabilities = parsed.liabilities;
+          if (Array.isArray(parsed.transactions)) state.transactions = parsed.transactions;
+          if (Array.isArray(parsed.goals)) state.goals = parsed.goals;
+          if (parsed.budgets && typeof parsed.budgets === 'object') {
+            Object.keys(state.budgets).forEach(cat => {
+              if (parsed.budgets[cat]) {
+                state.budgets[cat] = {
+                  spent: typeof parsed.budgets[cat].spent === 'number' ? parsed.budgets[cat].spent : 0,
+                  limit: typeof parsed.budgets[cat].limit === 'number' ? parsed.budgets[cat].limit : 0
+                };
+              }
+            });
+          }
+        }
+      } else {
+        // No remote row found yet, create one
+        await saveStateToDB();
+      }
+    } catch (e) {
+      console.warn('Failed to load user state from Supabase database, falling back to LocalStorage.', e);
+      loadFromLocalStorage();
+    }
+  } else {
+    loadFromLocalStorage();
+  }
+  
+  // Update Profile details in sidebar
+  const avatarEl = document.getElementById('user-avatar');
+  const nameEl = document.getElementById('user-display-name');
+  const roleEl = document.getElementById('user-display-role');
+  
+  if (nameEl) nameEl.textContent = username;
+  if (roleEl) roleEl.textContent = username === 'Romeo' ? 'Budget Manager' : 'Savings Expert';
+  if (avatarEl) {
+    avatarEl.textContent = username.charAt(0).toUpperCase();
+  }
+  
+  updateDashboardUI();
+}
+
+function loadFromLocalStorage() {
   try {
     const savedState = localStorage.getItem(getUserStorageKey());
     if (savedState) {
@@ -52,31 +109,36 @@ function loadUserState(username) {
       }
     }
   } catch (e) {
-    console.warn('Failed to load user state from browser LocalStorage database.', e);
+    console.warn('Failed to load user state from browser LocalStorage.', e);
   }
-  
-  // Update Profile details in sidebar
-  const avatarEl = document.getElementById('user-avatar');
-  const nameEl = document.getElementById('user-display-name');
-  const roleEl = document.getElementById('user-display-role');
-  
-  if (nameEl) nameEl.textContent = username;
-  if (roleEl) roleEl.textContent = username === 'Romeo' ? 'Budget Manager' : 'Savings Expert';
-  if (avatarEl) {
-    avatarEl.textContent = username.charAt(0).toUpperCase();
-  }
-  
-  updateDashboardUI();
 }
 
-// Save State to LocalStorage Database
-function saveStateToDB() {
+// Save State to Supabase Database (with LocalStorage cache)
+async function saveStateToDB() {
   const key = getUserStorageKey();
   if (!key) return;
+  
+  // Local cache
   try {
     localStorage.setItem(key, JSON.stringify(state));
   } catch (e) {
-    console.error('Failed to write state changes to browser LocalStorage database.', e);
+    console.warn('LocalStorage save failed', e);
+  }
+
+  // Supabase sync
+  if (supabase && currentUser) {
+    try {
+      const { error } = await supabase
+        .from('user_budgets_state')
+        .upsert({
+          username: currentUser,
+          state_data: state,
+          updated_at: new Date().toISOString()
+        });
+      if (error) throw error;
+    } catch (e) {
+      console.error('Failed to write state changes to Supabase database.', e);
+    }
   }
 }
 
