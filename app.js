@@ -1,7 +1,7 @@
 // Supabase Database Configuration
 const SUPABASE_URL = 'https://upgrmmymzgystzkffawe.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwZ3JtbXltemd5c3R6a2ZmYXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzY4ODIsImV4cCI6MjA5ODIxMjg4Mn0.FPAeK5_su8Jf94BBWslR2w590mDRsW3Jolhfh2vdDj0';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 const defaultState = {
   assets: 0.00,
@@ -32,9 +32,9 @@ async function loadUserState(username) {
   currentUser = username;
   state = JSON.parse(JSON.stringify(defaultState));
   
-  if (supabase) {
+  if (supabaseClient) {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('user_budgets_state')
         .select('state_data')
         .eq('username', username)
@@ -126,9 +126,9 @@ async function saveStateToDB() {
   }
 
   // Supabase sync
-  if (supabase && currentUser) {
+  if (supabaseClient && currentUser) {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('user_budgets_state')
         .upsert({
           username: currentUser,
